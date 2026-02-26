@@ -1,6 +1,10 @@
 {
   "name": "nexus",
   "private": true,
+  "workspaces": [
+    "nexus-platform-web",
+    "nexus-platform-worker"
+  ],
   "scripts": {
     "dev:web": "cd nexus-platform-web && bun run dev",
     "dev:core": "cd nexus-platform-core && ./mvnw spring-boot:run",
@@ -20,12 +24,12 @@
   },
   "lint-staged": {
     "nexus-platform-web/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "bunx --bun eslint --fix",
+      "bunx --bun prettier --write"
     ],
     "nexus-platform-worker/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "bunx --bun eslint --fix",
+      "bunx --bun prettier --write"
     ]
   }
 }

@@ -62,7 +62,7 @@ bun run dev:web
 bun run dev:worker
 ```
 
-The frontend will be available at `http://localhost:5173`.
+The frontend will be available at `http://localhost:5180`.
 
 ## Project Structure
 
@@ -84,9 +84,9 @@ Run these from the repo root:
 
 | Script | Command | Description |
 |--------|---------|-------------|
-| `bun run dev:web` | Vite dev server | Start frontend on :5173 |
-| `bun run dev:core` | `./mvnw spring-boot:run` | Start backend on :8080 |
-| `bun run dev:worker` | Node.js worker | Start AI worker on :3001 |
+| `bun run dev:web` | Vite dev server | Start frontend on :5180 |
+| `bun run dev:core` | `./mvnw spring-boot:run` | Start backend on :8085 |
+| `bun run dev:worker` | Node.js worker | Start AI worker on :3005 |
 | `bun run dev:infra` | `docker compose up -d` | Start PostgreSQL + Redis |
 | `bun run dev:infra:down` | `docker compose down` | Stop infrastructure |
 | `bun run build:web` | Vite build | Production build of frontend |
