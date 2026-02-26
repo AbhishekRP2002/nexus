@@ -1,0 +1,40 @@
+# === General ===
+.DS_Store
+*.log
+*.swp
+*.swo
+*~
+.env
+.env.local
+.env.*.local
+
+# === IDE ===
+.idea/
+.vscode/
+*.iml
+
+# === Java / Spring Boot (nexus-platform-core) ===
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+.gradle/
+hs_err_pid*
+
+# === Node.js / TypeScript (nexus-platform-web, nexus-platform-worker) ===
+node_modules/
+dist/
+.cache/
+*.tsbuildinfo
+
+# === Docker ===
+docker-compose.override.yml
+
+# === Docs (keep out of version control) ===
+ARCHITECTURE.md
+*.docx
+*prod.md

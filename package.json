@@ -1,0 +1,31 @@
+{
+  "name": "nexus",
+  "private": true,
+  "scripts": {
+    "dev:web": "cd nexus-platform-web && bun run dev",
+    "dev:core": "cd nexus-platform-core && ./mvnw spring-boot:run",
+    "dev:worker": "cd nexus-platform-worker && bun run dev",
+    "dev:infra": "docker compose up -d",
+    "dev:infra:down": "docker compose down",
+    "lint:web": "cd nexus-platform-web && bun run lint",
+    "lint:worker": "cd nexus-platform-worker && bun run lint",
+    "build:web": "cd nexus-platform-web && bun run build",
+    "build:core": "cd nexus-platform-core && ./mvnw clean package -DskipTests",
+    "test:core": "cd nexus-platform-core && ./mvnw test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9",
+    "lint-staged": "^15"
+  },
+  "lint-staged": {
+    "nexus-platform-web/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "nexus-platform-worker/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
