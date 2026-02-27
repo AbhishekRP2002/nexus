@@ -117,10 +117,23 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
-    @apply bg-background text-foreground;
-    }
+    @apply bg-background text-foreground antialiased;
+    font-family: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1, "ss02" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    font-weight: 600;
+  }
+  h1 { letter-spacing: -0.04em; }
+  h2 { letter-spacing: -0.03em; }
+  p { text-wrap: pretty; }
 }
 
 @keyframes float {
@@ -134,4 +147,55 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* Tiptap editor content styles */
+.tiptap-content .tiptap {
+  @apply text-sm leading-relaxed text-muted-foreground;
+}
+.tiptap-content .tiptap:focus {
+  @apply outline-none;
+}
+.tiptap-content .tiptap h2 {
+  @apply text-lg font-semibold text-foreground mt-5 mb-2 first:mt-0;
+}
+.tiptap-content .tiptap h3 {
+  @apply text-base font-semibold text-foreground mt-4 mb-2 first:mt-0;
+}
+.tiptap-content .tiptap p {
+  @apply mb-3 last:mb-0;
+}
+.tiptap-content .tiptap ul {
+  @apply list-disc pl-5 mb-3 space-y-1;
+}
+.tiptap-content .tiptap ol {
+  @apply list-decimal pl-5 mb-3 space-y-1;
+}
+.tiptap-content .tiptap li {
+  @apply text-sm text-muted-foreground;
+}
+.tiptap-content .tiptap li p {
+  @apply mb-0;
+}
+.tiptap-content .tiptap blockquote {
+  @apply border-l-2 border-primary/30 pl-4 italic text-muted-foreground/80 my-3;
+}
+.tiptap-content .tiptap code {
+  @apply rounded bg-muted px-1.5 py-0.5 text-xs font-mono text-foreground;
+}
+.tiptap-content .tiptap pre {
+  @apply rounded-lg bg-muted/50 p-4 my-3 overflow-x-auto;
+}
+.tiptap-content .tiptap pre code {
+  @apply bg-transparent p-0 text-xs;
+}
+.tiptap-content .tiptap mark {
+  @apply bg-primary/20 rounded px-0.5;
+}
+.tiptap-content .tiptap hr {
+  @apply my-6 border-border/40;
+}
+.tiptap-content .tiptap p.is-editor-empty:first-child::before {
+  @apply text-muted-foreground/40 float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
 }
