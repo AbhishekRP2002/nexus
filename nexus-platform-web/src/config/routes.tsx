@@ -7,6 +7,7 @@ import FeedPage from "@/pages/feed"
 import ReaderPage from "@/pages/reader"
 import SearchPage from "@/pages/search"
 import MapPage from "@/pages/map"
+import OnboardingPage from "@/pages/onboarding"
 import NotFoundPage from "@/pages/not-found"
 
 export const router = createBrowserRouter([
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
           { path: "/content/:id", element: <ReaderPage /> },
           { path: "/search", element: <SearchPage /> },
           { path: "/map", element: <MapPage /> },
+          { path: "/onboarding", element: <OnboardingPage /> },
         ],
       },
     ],
