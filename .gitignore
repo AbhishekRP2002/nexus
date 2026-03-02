@@ -12,6 +12,9 @@
 .idea/
 .vscode/
 *.iml
+*.iws
+*.ipr
+out/
 
 # === Java / Spring Boot (nexus-platform-core) ===
 *.class
@@ -24,6 +27,11 @@ build/
 !**/src/test/**/build/
 .gradle/
 hs_err_pid*
+.mvn/repository/
+
+# === Spring Boot secret configs (never commit) ===
+**/resources/application-local.yml
+**/resources/application-prod.yml
 
 # === Node.js / TypeScript (nexus-platform-web, nexus-platform-worker) ===
 node_modules/
@@ -34,7 +42,10 @@ dist/
 # === Docker ===
 docker-compose.override.yml
 
-# === Docs (keep out of version control) ===
-ARCHITECTURE.md
+# === OS ===
+Thumbs.db
+ehthumbs.db
+
+# === Docs ===
 *.docx
 *prod.md
