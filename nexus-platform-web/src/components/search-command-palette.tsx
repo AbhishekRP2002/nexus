@@ -79,12 +79,13 @@ export function SearchCommandPalette({ open, onOpenChange, onAddUrl }: SearchCom
       title="Search"
       description="Search your knowledge base or run a quick action"
       showCloseButton={false}
-      className="max-w-xl rounded-xl border-border/50 bg-background shadow-2xl"
+      className="!max-w-2xl rounded-xl border-border/50 bg-background shadow-2xl"
     >
       <CommandInput
         placeholder="Search your knowledge base..."
         value={searchValue}
         onValueChange={setSearchValue}
+        className="h-12 text-base"
         onKeyDown={(e) => {
           if (e.key === "Enter" && searchValue.trim()) {
             e.preventDefault()
@@ -92,8 +93,8 @@ export function SearchCommandPalette({ open, onOpenChange, onAddUrl }: SearchCom
           }
         }}
       />
-      <CommandList className="max-h-[360px]">
-        <CommandEmpty className="py-8">
+      <CommandList className="max-h-[420px] p-1">
+        <CommandEmpty className="py-10">
           <div className="flex flex-col items-center gap-2">
             <Search className="size-5 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">No results found</p>
@@ -102,11 +103,11 @@ export function SearchCommandPalette({ open, onOpenChange, onAddUrl }: SearchCom
 
         {searchValue.trim() && (
           <CommandGroup>
-            <CommandItem onSelect={handleSearchSubmit} className="gap-3 py-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+            <CommandItem onSelect={handleSearchSubmit} className="gap-3 rounded-lg px-3 py-3.5">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
                 <Sparkles className="size-4 text-primary" />
               </div>
-              <div className="flex flex-1 flex-col">
+              <div className="flex flex-1 flex-col gap-0.5">
                 <span className="text-sm font-medium">
                   Search &ldquo;{searchValue.trim()}&rdquo;
                 </span>
@@ -114,7 +115,7 @@ export function SearchCommandPalette({ open, onOpenChange, onAddUrl }: SearchCom
                   AI-powered search across your knowledge base
                 </span>
               </div>
-              <ArrowRight className="size-3.5 text-muted-foreground" />
+              <ArrowRight className="size-4 text-muted-foreground" />
             </CommandItem>
           </CommandGroup>
         )}
@@ -126,35 +127,35 @@ export function SearchCommandPalette({ open, onOpenChange, onAddUrl }: SearchCom
                 <CommandItem
                   key={query}
                   onSelect={() => handleRecentSearch(query)}
-                  className="gap-3"
+                  className="gap-3 rounded-lg px-3 py-2.5"
                 >
-                  <Clock className="size-3.5 text-muted-foreground/60" />
+                  <Clock className="size-4 text-muted-foreground/50" />
                   <span className="text-sm">{query}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
 
-            <CommandSeparator />
+            <CommandSeparator className="my-1" />
 
             <CommandGroup heading="Quick Actions">
               {quickActions.map((action) => (
                 <CommandItem
                   key={action.label}
                   onSelect={() => handleQuickAction(action.action)}
-                  className="gap-3"
+                  className="gap-3 rounded-lg px-3 py-2.5"
                 >
-                  <action.icon className="size-3.5 text-muted-foreground/60" />
+                  <action.icon className="size-4 text-muted-foreground/50" />
                   <span className="text-sm">{action.label}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
 
-            <CommandSeparator />
+            <CommandSeparator className="my-1" />
 
             <CommandGroup heading="Search Tips">
-              <div className="px-2 py-3">
+              <div className="px-3 py-3">
                 <div className="flex items-start gap-3">
-                  <FileText className="mt-0.5 size-3.5 text-muted-foreground/40" />
+                  <FileText className="mt-0.5 size-4 text-muted-foreground/40" />
                   <p className="text-xs leading-relaxed text-muted-foreground/70">
                     Ask natural questions like &ldquo;What are the tradeoffs of vector
                     databases?&rdquo; — Nexus searches across all your saved content and synthesizes
