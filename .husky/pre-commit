@@ -1,1 +1,26 @@
+echo "🔍 Running pre-commit checks..."
+
+# 1. Block accidental secret config commits
+if git diff --cached --name-only | grep -E "application-local\.yml$|application-prod\.yml$|^\.env$"; then
+  echo "❌ Blocked: attempting to commit secret config files"
+  exit 1
+fi
+
+# 2. Backend — Checkstyle (only if .java files changed)
+if git diff --cached --name-only | grep -q "nexus-platform-core/.*\.java$"; then
+  echo "→ Checking Java code style..."
+  REPO_ROOT="$(git rev-parse --show-toplevel)"
+  CORE_DIR="$REPO_ROOT/nexus-platform-core"
+  if [ -f "$CORE_DIR/mvnw" ]; then
+    cd "$CORE_DIR" && ./mvnw checkstyle:check -q && cd "$REPO_ROOT"
+  elif command -v mvn &> /dev/null; then
+    cd "$CORE_DIR" && mvn checkstyle:check -q && cd "$REPO_ROOT"
+  else
+    echo "⚠ Skipping Checkstyle — mvnw/mvn not found"
+  fi
+fi
+
+# 3. Frontend + Worker — ESLint + Prettier via lint-staged
 bunx lint-staged
+
+echo "✅ All checks passed"

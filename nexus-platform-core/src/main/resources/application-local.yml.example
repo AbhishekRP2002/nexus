@@ -1,0 +1,30 @@
+# Copy this file to application-local.yml and fill in your local values.
+# application-local.yml is gitignored — never commit it.
+# Activate with: -Dspring.profiles.active=local (IntelliJ Run Config)
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nexus
+    username: nexus
+    password: nexus
+
+  jpa:
+    show-sql: true              # helpful during local dev
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: YOUR_GOOGLE_CLIENT_ID
+            client-secret: YOUR_GOOGLE_CLIENT_SECRET
+
+app:
+  jwt:
+    secret: local-dev-secret-change-in-prod-min-32-chars
+  frontend-url: http://localhost:5173
+
+logging:
+  level:
+    com.nexus: DEBUG
+    org.springframework.security: DEBUG
