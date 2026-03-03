@@ -13,6 +13,10 @@ export default defineConfig({
   server: {
     port: 5180,
     proxy: {
+      "/api/search": {
+        target: "http://localhost:3005",
+        changeOrigin: true,
+      },
       "/api": {
         target: "http://localhost:8085",
         changeOrigin: true,

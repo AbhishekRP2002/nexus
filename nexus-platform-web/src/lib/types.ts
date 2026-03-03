@@ -70,6 +70,32 @@ export interface ProcessingItem {
   status: ContentStatus
 }
 
+// ---------- Search types ----------
+
+export interface SearchResultItem {
+  id: string
+  title: string
+  sourceType: SourceType
+  sourceUrl: string
+  synopsis?: string
+  relevanceScore: number
+}
+
+export interface CitationSource {
+  id: string
+  title: string
+  sourceType: string
+  sourceUrl: string
+}
+
+export interface AiAnswer {
+  text: string
+  citations: Record<string, CitationSource>
+  followUpQuestions: string[]
+}
+
+export type SearchPhase = "idle" | "retrieving" | "generating" | "done" | "error"
+
 // ---------- Chapter / Living Book types ----------
 
 export type ChapterSectionType = "overview" | "techniques" | "lessons" | "entities" | "subchapters"

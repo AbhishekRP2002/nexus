@@ -1,20 +1,10 @@
 {
   "name": "nexus",
-  "devDependencies": {
-    "husky": "^9",
-    "lint-staged": "^15"
-  },
-  "lint-staged": {
-    "nexus-platform-web/**/*.{ts,tsx}": [
-      "bunx --bun eslint --fix",
-      "bunx --bun prettier --write"
-    ],
-    "nexus-platform-worker/**/*.{ts,tsx}": [
-      "bunx --bun eslint --fix",
-      "bunx --bun prettier --write"
-    ]
-  },
   "private": true,
+  "workspaces": [
+    "nexus-platform-web",
+    "nexus-platform-worker"
+  ],
   "scripts": {
     "dev:web": "cd nexus-platform-web && bun run dev",
     "dev:core": "cd nexus-platform-core && ./mvnw spring-boot:run",
@@ -28,11 +18,42 @@
     "test:core": "cd nexus-platform-core && ./mvnw test",
     "prepare": "husky"
   },
-  "workspaces": [
-    "nexus-platform-web",
-    "nexus-platform-worker"
-  ],
   "dependencies": {
-    "@fontsource/geist-sans": "^5.2.5"
+    "@fontsource/geist-sans": "^5.2.5",
+    "@hono/standard-validator": "^0.2.2",
+    "@langchain/anthropic": "^1.3.21",
+    "@langchain/core": "^1.1.29",
+    "@langchain/langgraph": "^1.2.0",
+    "@langchain/openai": "^1.2.11",
+    "@langchain/openrouter": "^0.1.4",
+    "@standard-community/standard-json": "^0.3.5",
+    "@standard-community/standard-openapi": "^0.2.9",
+    "@types/json-schema": "^7.0.15",
+    "openapi-types": "^12.1.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "dotenv": "^16",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.5.0",
+    "husky": "^9",
+    "lint-staged": "^15",
+    "prettier": "^3.8.1",
+    "tsx": "^4",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^3"
+  },
+  "lint-staged": {
+    "nexus-platform-web/**/*.{ts,tsx}": [
+      "bunx --bun eslint --fix",
+      "bunx --bun prettier --write"
+    ],
+    "nexus-platform-worker/**/*.{ts,tsx}": [
+      "bunx --bun eslint --fix",
+      "bunx --bun prettier --write"
+    ]
   }
 }
