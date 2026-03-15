@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Zap, Globe, Linkedin } from "lucide-react"
+import { Zap, Globe, Linkedin, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -51,12 +51,27 @@ const sources = [
         <Linkedin className="size-5 text-blue-400" />
       </div>
     ),
-    description: "Paste LinkedIn post URLs to capture insights from your professional feed.",
-    action: "Manual URL only",
+    description: "Capture insights from LinkedIn posts, articles, and your professional feed.",
+    action: "Coming Soon",
     actionVariant: "outline" as const,
     recommended: false,
     available: false,
-    footnote: "AUTO-SYNC COMING SOON",
+    footnote: null,
+  },
+  {
+    id: "reddit",
+    name: "Reddit",
+    icon: () => (
+      <div className="flex size-10 items-center justify-center rounded-lg bg-orange-500/15">
+        <MessageSquare className="size-5 text-orange-400" />
+      </div>
+    ),
+    description: "Save threads and discussions from your favourite subreddits and saved posts.",
+    action: "Coming Soon",
+    actionVariant: "outline" as const,
+    recommended: false,
+    available: false,
+    footnote: null,
   },
 ]
 
@@ -130,7 +145,7 @@ export default function OnboardingPage() {
               <div className="mt-auto">
                 <Button
                   variant={source.actionVariant}
-                  className="w-full"
+                  className={cn("w-full", !source.available && source.id !== "web" && "opacity-60")}
                   disabled={!source.available && source.id !== "web"}
                   onClick={() => handleConnect(source.id)}
                 >

@@ -1,4 +1,4 @@
-export type SourceType = "twitter" | "web" | "linkedin"
+export type SourceType = "twitter" | "web" | "linkedin" | "reddit"
 
 export type ContentStatus =
   | "PENDING"

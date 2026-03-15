@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SourceBadge } from "@/components/source-badge"
-import { streamSearch, type SearchStreamState } from "@/lib/search-api"
+import { streamSearch, getCachedResult, type SearchStreamState } from "@/lib/search-api"
 import type { SearchResultItem, CitationSource, SearchPhase, SourceType } from "@/lib/types"
 
 // Temporary user ID until auth is connected
@@ -51,7 +51,15 @@ export default function SearchPage() {
     // Cancel previous stream
     controllerRef.current?.abort()
 
-    // Reset state
+    // Check cache first — if we have a completed result, restore it
+    // without resetting to loading state (avoids flash on back/reload)
+    const cached = getCachedResult(query, TEMP_USER_ID)
+    if (cached) {
+      handleUpdate(cached)
+      return
+    }
+
+    // Reset state for a fresh search
     setPhase("retrieving")
     setAnswerText("")
     setCitations({})

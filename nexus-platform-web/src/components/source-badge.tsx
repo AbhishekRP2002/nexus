@@ -17,6 +17,11 @@ const sourceConfig: Record<SourceType, { label: string; prefix: string; classNam
     prefix: "in",
     className: "bg-blue-500/15 text-blue-400",
   },
+  reddit: {
+    label: "REDDIT",
+    prefix: "r/",
+    className: "bg-orange-500/15 text-orange-400",
+  },
 }
 
 export function SourceBadge({

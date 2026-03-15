@@ -11,17 +11,38 @@ export interface SearchStreamState {
 
 type StateCallback = (state: SearchStreamState) => void
 
-/* ─── In-memory search cache ─── */
-
-const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000
 const MAX_CACHE_ENTRIES = 50
+const STORAGE_KEY = "nexus:search-cache"
 
 interface CacheEntry {
   state: SearchStreamState
   timestamp: number
 }
 
-const cache = new Map<string, CacheEntry>()
+const cache = new Map<string, CacheEntry>(loadFromStorage())
+
+function loadFromStorage(): [string, CacheEntry][] {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const entries: [string, CacheEntry][] = JSON.parse(raw)
+    const now = Date.now()
+    // Filter out expired entries on load
+    return entries.filter(([, entry]) => now - entry.timestamp <= CACHE_TTL_MS)
+  } catch {
+    return []
+  }
+}
+
+function persistToStorage() {
+  try {
+    const entries = Array.from(cache.entries())
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
+  } catch {
+    // Storage full or unavailable — silently ignore
+  }
+}
 
 function getCacheKey(query: string, userId: string): string {
   return `${userId}:${query.trim().toLowerCase()}`
@@ -32,6 +53,7 @@ function getCached(key: string): SearchStreamState | null {
   if (!entry) return null
   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
     cache.delete(key)
+    persistToStorage()
     return null
   }
   return entry.state
@@ -44,6 +66,15 @@ function setCache(key: string, state: SearchStreamState) {
     if (oldestKey !== undefined) cache.delete(oldestKey)
   }
   cache.set(key, { state: { ...state }, timestamp: Date.now() })
+  persistToStorage()
+}
+
+/**
+ * Look up a cached result without triggering a search.
+ * Used by the search page to instantly restore results on back/reload.
+ */
+export function getCachedResult(query: string, userId: string): SearchStreamState | null {
+  return getCached(getCacheKey(query, userId))
 }
 
 /**

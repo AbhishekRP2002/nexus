@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SourceBadge } from "@/components/source-badge"
 import { cn } from "@/lib/utils"
 import { mockFeedItems, mockStats, mockTopCategories, mockProcessing } from "@/lib/mock-data"
@@ -165,6 +166,34 @@ export default function FeedPage() {
                 <TabsTrigger value="web" className="text-xs">
                   Web
                 </TabsTrigger>
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex">
+                        <TabsTrigger value="linkedin" className="text-xs opacity-50" disabled>
+                          LinkedIn
+                        </TabsTrigger>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">
+                      Coming Soon
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex">
+                        <TabsTrigger value="reddit" className="text-xs opacity-50" disabled>
+                          Reddit
+                        </TabsTrigger>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">
+                      Coming Soon
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </TabsList>
             </Tabs>
           </div>
