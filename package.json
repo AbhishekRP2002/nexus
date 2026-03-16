@@ -13,8 +13,11 @@
     "dev:infra:down": "docker compose down",
     "lint:web": "cd nexus-platform-web && bun run lint",
     "lint:worker": "cd nexus-platform-worker && bun run lint",
+    "lint:fix": "cd nexus-platform-web && bun run lint:fix && cd ../nexus-platform-worker && bun run lint:fix",
     "build:web": "cd nexus-platform-web && bun run build",
+    "build:worker": "cd nexus-platform-worker && bun run build",
     "build:core": "cd nexus-platform-core && ./mvnw clean package -DskipTests",
+    "test:worker": "cd nexus-platform-worker && bun run test",
     "test:core": "cd nexus-platform-core && ./mvnw test",
     "prepare": "husky"
   },

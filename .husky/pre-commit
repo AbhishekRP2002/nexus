@@ -1,26 +1,72 @@
+#!/bin/sh
+
 echo "🔍 Running pre-commit checks..."
 
-# 1. Block accidental secret config commits
-if git diff --cached --name-only | grep -E "application-local\.yml$|application-prod\.yml$|^\.env$"; then
-  echo "❌ Blocked: attempting to commit secret config files"
+# Gitleaks — scan for hardcoded secrets
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "❌ Gitleaks is not installed."
+  if [ "$(uname)" = "Darwin" ]; then
+    echo "👉 Please install it using: brew install gitleaks"
+  else
+    echo "👉 Install from https://github.com/gitleaks/gitleaks#installation"
+  fi
   exit 1
 fi
 
-# 2. Backend — Checkstyle (only if .java files changed)
+echo "→ Scanning for secrets (gitleaks)..."
+gitleaks detect --no-git --source=. --redact -v
+if [ $? -ne 0 ]; then
+  echo "❌ Gitleaks detected secrets. Remove them before committing."
+  exit 1
+fi
+
+# Block secret config files from being staged
+if git diff --cached --name-only | grep -qE "application-local\.yml$|application-prod\.yml$|^\.env$"; then
+  echo "❌ Blocked: attempting to commit secret config files (.env, application-local.yml, etc.)"
+  exit 1
+fi
+
+# Lint fix (auto-format staged TS/TSX files)
+echo "→ Running lint fix..."
+bunx lint-staged
+
+# Build — type-check web + worker
+CHANGED_WEB=$(git diff --cached --name-only | grep -c "nexus-platform-web/")
+CHANGED_WORKER=$(git diff --cached --name-only | grep -c "nexus-platform-worker/")
+
+if [ "$CHANGED_WEB" -gt 0 ]; then
+  echo "→ Building nexus-platform-web..."
+  cd nexus-platform-web && bun run build
+  if [ $? -ne 0 ]; then
+    echo "❌ Web build failed"
+    exit 1
+  fi
+  cd ..
+fi
+
+if [ "$CHANGED_WORKER" -gt 0 ]; then
+  echo "→ Building nexus-platform-worker..."
+  cd nexus-platform-worker && bun run build
+  if [ $? -ne 0 ]; then
+    echo "❌ Worker build failed"
+    exit 1
+  fi
+  cd ..
+fi
+
+
+# Backend — Checkstyle (only if .java files changed)
 if git diff --cached --name-only | grep -q "nexus-platform-core/.*\.java$"; then
   echo "→ Checking Java code style..."
   REPO_ROOT="$(git rev-parse --show-toplevel)"
   CORE_DIR="$REPO_ROOT/nexus-platform-core"
   if [ -f "$CORE_DIR/mvnw" ]; then
     cd "$CORE_DIR" && ./mvnw checkstyle:check -q && cd "$REPO_ROOT"
-  elif command -v mvn &> /dev/null; then
+  elif command -v mvn &>/dev/null; then
     cd "$CORE_DIR" && mvn checkstyle:check -q && cd "$REPO_ROOT"
   else
     echo "⚠ Skipping Checkstyle — mvnw/mvn not found"
   fi
 fi
 
-# 3. Frontend + Worker — ESLint + Prettier via lint-staged
-bunx lint-staged
-
-echo "✅ All checks passed"
+echo "✅ All pre-commit checks passed"

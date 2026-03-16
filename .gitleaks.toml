@@ -1,0 +1,10 @@
+title = "Nexus Gitleaks Config"
+
+[allowlist]
+  # Files that contain placeholder/example values, not real secrets
+  paths = [
+    '''.env\.example''',
+    '''bun\.lock''',
+    '''package-lock\.json''',
+    '''\.gitleaks\.toml''',
+  ]
