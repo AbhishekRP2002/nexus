@@ -7,6 +7,12 @@ import { requestId } from "./shared/middleware/request-id.js";
 import { errorHandler } from "./shared/middleware/error-handler.js";
 import { searchRoutes } from "./domains/search/search.routes.js";
 import { getQdrantStore } from "./shared/vectorstore/qdrant.store.js";
+import {
+  startConsumer,
+  stopConsumer,
+} from "./domains/ingestion/queue.consumer.js";
+import { closeRedis } from "./shared/clients/redis.client.js";
+import { closeDb } from "./shared/clients/db.client.js";
 import { logger } from "./shared/utils/logger.js";
 
 const app = new Hono();
@@ -60,7 +66,28 @@ async function start() {
       "nexus-platform-worker started",
     );
   });
+
+  // Start queue consumer in background (non-blocking — BRPOP yields the event loop)
+  if (envConfig.ENABLE_CONSUMER) {
+    startConsumer().catch((err) => {
+      logger.error({ err }, "Content ingestion consumer crashed");
+    });
+  } else {
+    logger.info("Content ingestion consumer disabled (ENABLE_CONSUMER=false)");
+  }
 }
+
+// Graceful shutdown
+function shutdown(signal: string) {
+  logger.info({ signal }, "Shutting down");
+  stopConsumer();
+  Promise.all([closeRedis(), closeDb()])
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 start().catch((err) => {
   logger.fatal({ err }, "Failed to start worker");

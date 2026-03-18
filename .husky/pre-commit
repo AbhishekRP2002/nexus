@@ -1,26 +1,65 @@
+#!/bin/sh
+
 echo "🔍 Running pre-commit checks..."
 
-# 1. Block accidental secret config commits
-if git diff --cached --name-only | grep -E "application-local\.yml$|application-prod\.yml$|^\.env$"; then
-  echo "❌ Blocked: attempting to commit secret config files"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# ── 1. Gitleaks — scan staged changes for hardcoded secrets ──────────────────
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "❌ Gitleaks is not installed."
+  if [ "$(uname)" = "Darwin" ]; then
+    echo "👉 Please install it using: brew install gitleaks"
+  else
+    echo "👉 Install from https://github.com/gitleaks/gitleaks#installation"
+  fi
   exit 1
 fi
 
-# 2. Backend — Checkstyle (only if .java files changed)
-if git diff --cached --name-only | grep -q "nexus-platform-core/.*\.java$"; then
+echo "→ Scanning staged changes for secrets (gitleaks)..."
+gitleaks git --pre-commit --staged --no-banner --redact
+if [ $? -ne 0 ]; then
+  echo "❌ Gitleaks detected secrets in staged files. Remove them before committing."
+  echo "   Run: gitleaks git --pre-commit --staged -v  (for details)"
+  exit 1
+fi
+
+# ── 2. Block secret config files from being staged ───────────────────────────
+if git diff --cached --name-only | grep -qE "application-local\.yml$|application-prod\.yml$|^\.env$"; then
+  echo "❌ Blocked: attempting to commit secret config files (.env, application-local.yml, etc.)"
+  exit 1
+fi
+
+# ── 3. Lint fix (auto-format staged TS/TSX files) ────────────────────────────
+echo "→ Running lint-staged..."
+bunx lint-staged --allow-empty
+
+# ── 4. Build — type-check changed projects only ──────────────────────────────
+CHANGED_WEB=$(git diff --cached --name-only | grep -c "nexus-platform-web/" || true)
+CHANGED_WORKER=$(git diff --cached --name-only | grep -c "nexus-platform-worker/" || true)
+CHANGED_CORE=$(git diff --cached --name-only | grep -c "nexus-platform-core/" || true)
+
+if [ "$CHANGED_WEB" -gt 0 ]; then
+  echo "→ Building nexus-platform-web..."
+  (cd "$REPO_ROOT/nexus-platform-web" && bun run build) || { echo "❌ Web build failed"; exit 1; }
+fi
+
+if [ "$CHANGED_WORKER" -gt 0 ]; then
+  echo "→ Building nexus-platform-worker..."
+  (cd "$REPO_ROOT/nexus-platform-worker" && bun run build) || { echo "❌ Worker build failed"; exit 1; }
+fi
+
+# ── 5. Backend — Checkstyle (only if .java files changed) ────────────────────
+if [ "$CHANGED_CORE" -gt 0 ] && git diff --cached --name-only | grep -q "\.java$"; then
   echo "→ Checking Java code style..."
-  REPO_ROOT="$(git rev-parse --show-toplevel)"
   CORE_DIR="$REPO_ROOT/nexus-platform-core"
   if [ -f "$CORE_DIR/mvnw" ]; then
-    cd "$CORE_DIR" && ./mvnw checkstyle:check -q && cd "$REPO_ROOT"
-  elif command -v mvn &> /dev/null; then
-    cd "$CORE_DIR" && mvn checkstyle:check -q && cd "$REPO_ROOT"
+    (cd "$CORE_DIR" && ./mvnw checkstyle:check -q) || { echo "❌ Checkstyle failed"; exit 1; }
+  elif command -v mvn &>/dev/null; then
+    (cd "$CORE_DIR" && mvn checkstyle:check -q) || { echo "❌ Checkstyle failed"; exit 1; }
   else
     echo "⚠ Skipping Checkstyle — mvnw/mvn not found"
   fi
 fi
 
-# 3. Frontend + Worker — ESLint + Prettier via lint-staged
-bunx lint-staged
-
-echo "✅ All checks passed"
+echo "✅ All pre-commit checks passed"

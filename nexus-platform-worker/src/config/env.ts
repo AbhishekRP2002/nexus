@@ -22,6 +22,25 @@ const envSchema = z.object({
 
   QDRANT_ENDPOINT: z.string().url("QDRANT_ENDPOINT must be a valid URL"),
   QDRANT_API_KEY: z.string().min(1, "QDRANT_API_KEY is required"),
+
+  // Redis
+  REDIS_HOST: z.string().default("localhost"),
+  REDIS_PORT: z.coerce.number().default(6379),
+
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+
+  // Content scraping
+  FIRECRAWL_API_KEY: z.string().min(1, "FIRECRAWL_API_KEY is required"),
+  EXA_API_KEY: z.string().optional(),
+
+  // Queue names
+  CONTENT_QUEUE: z.string().default("nexus:queue:content-ingestion"),
+  DEAD_LETTER_QUEUE: z.string().default("nexus:queue:dead-letter"),
+
+  ENABLE_CONSUMER: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((v) => v === "true"),
 });
 
 const parsed = envSchema.safeParse(process.env);
